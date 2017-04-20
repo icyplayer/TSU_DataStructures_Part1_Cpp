@@ -99,14 +99,65 @@ T Vector<T>::remove(Rank r) {
 	return e;
 }
 
-// O(n)
-// Input-sensitive
+// O(n). Input-sensitive
+// disordered vector
 template<typename T>
 Rank Vector<T>::find(T const& e ,Rank lo, Rank hi) {
 	while ((lo < hi--) && (_elem[hi] != e)); // reverse lookup
 	return hi; // hi<lo, find failed; o.w, hi is e's rank
 }
 
+// ordered vector
+template<typename T>
+Rank Vector<T>::search(T const& e, Rank lo, Rank hi) const {
+	return (rand() % 2) ? // To easier the test
+	   binSearch(e, lo, hi)
+	 : fibSearch(e, lo, hi);
+}
+
+// ordered vector
+// O(logn)
+template<typename T>
+static Rank Vector<T>::binSearch(T const& e, Rank lo, Rank hi) const {
+	/* implement based on 02D2-5. recursive version */
+	// TODO iterate version
+	if (lo <= hi){ // Error
+		return -1;
+	}
+	else if (hi-lo == 1){ // trivial solution
+		if (e < _elem[lo]){
+			return lo-1;
+		}
+		else if (_elem[lo] < e){
+			return hi;
+		}
+		else{
+			return lo;
+		}
+	}
+	Rank mi = (lo+hi) >> 1;
+	if (e < _elem[mi]){
+		hi = mi;
+	}
+	else if (_elem[mi] < e){
+		lo = mi+1;
+	}
+	else { // _elem[mi] == e
+		while (mi < hi && (_elem[mi++] == e));
+		return --mi;
+	}
+
+	return binSearch(e, lo, hi);
+}
+
+template<typename T>
+Rank Vector<T>::fibSearch(T const& e, Rank lo, Rank hi) const {
+	Rank idx = 0;
+	/* TODO */
+	return idx;
+}
+
+// disordered vector
 template<typename T>
 int Vector<T>::deduplicate(){
 	Rank oldSize = _size;
@@ -119,6 +170,53 @@ int Vector<T>::deduplicate(){
 	return oldSize - _size;
 }
 
+/*
+template<typename T>
+int Vector<T>::uniquify(){
+// NOTE: still cannot reach high efficiency
+	Rank oldSize = _size;
+	Rank i = 0; // Start from _elem[0]
+	while (i < _size-1){
+		Rank j = i+1;
+		while ((j < _size) && (_elem[i] == _elem[j++]));
+		remove(i+1, j);
+		i++;
+	}
+	return oldSize - _size;
+}
+*/
+
+// ordered vector
+template<typename T>
+int Vector<T>::uniquify(){ // CON: complicate to understand in the first instance
+	Rank i = 0, j = 0;
+	while (++j < _size){
+		if (_elem[i] != _elem[j]){
+			_elem[++i] = _elem[j];
+		}
+	}
+	_size = ++i; // shrink();
+	return j - i;
+} // NOTE: remove(lo, hi) still cannot reach high efficiency
+
+template<typename T>
+int Vector<T>::disordered() const{
+	int n = 0;
+	for (Rank i = 1; i< _size; ++i){
+		n += (_elem[i] < _elem[i-1]);
+	}
+	return n;
+}
+
+
+
+
+
+
+
+
+
+/* Iterator */
 // Function pointer
 template<typename T>
 void Vector<T>::traverse(void (*visit)(T&)){
@@ -155,9 +253,9 @@ void Vector<T>::doubleOpt(Vector<T> &V){
 	V.traverse(DoubleOpt<T>());
 }
 
-template<typename T>
-void Vector<T>::sum(Vector<T> &V){
-	V.traverse(Sum<T>());
-}
+//template<typename T>
+//void Vector<T>::sum(Vector<T> &V){
+//	V.traverse(Sum<T>());
+//}
 
 } /* namespace myimpl */

@@ -39,8 +39,14 @@ public:
 	Rank insert(Rank r, T e);
 	int remove(Rank lo, Rank hi); // remove _elem[lo, hi)
 	T remove(Rank r); // remove _elem[r] and return its value;
-	Rank find(T const& e ,Rank lo, Rank hi);
+
+	Rank find(T const& e ,Rank lo, Rank hi); // find: disordered vector find
+	Rank search(T const& e, Rank lo, Rank hi) const; // search: ordered vector find
+	static Rank binSearch(T const& e, Rank lo, Rank hi) const; // search: ordered vector find
+	Rank fibSearch(T const& e, Rank lo, Rank hi) const; // search: ordered vector find
+
 	int deduplicate();
+	int uniquify();
 	void traverse(void (*visit)(T&)); // Function pointer
 
 	template<typename VST>
@@ -49,6 +55,11 @@ public:
 	T& operator[] (Rank r) const;// {return _elem[r];
 
 	size_t size() const {return _size;}
+
+	int disordered() const;
+
+
+
 
 /* Iterating examples*/
 public:
