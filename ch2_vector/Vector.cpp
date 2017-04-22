@@ -70,10 +70,21 @@ void Vector<T>::merge(Rank lo, Rank mi, Rank hi) {
 	for (int i = 0; i < lb; ++i) B[i] = _elem[i];  // Make a copy of 1st half of vector
 	int lc = hi - mi; T *C = _elem + mi;
 	int j = 0, k = 0;
+	// 02F-4
+	/*
 	for(int i=0, j=0, k=0; (j < lb) || (k < lc);){
 		if ((j < lb) && ((lc < k) || B[j] <= C[k])) A[i++] = B[j++];  // C[k] not exists or B[j] <= C[k]
 		if ((k < lc) && ((lb < j) || C[k] <  B[j])) A[i++] = C[k++];  // B[j] not exists or C[k] <  B[k]
 	}
+	*/
+	// 02F-5
+	// consider single border condition: B used-up first, then quit loop.
+	// Elements remain in C is untouched and will not be changed.
+	for(int i=0, j=0, k=0; j < lb;){
+		if ((k < lc) && C[k] <  B[j]) A[i++] = C[k++];  // B[j] not exists or C[k] <  B[k]
+		if ((lc < k) || B[j] <= C[k]) A[i++] = B[j++];  // C[k] not exists or B[j] <= C[k]
+	}
+
 	delete [] B;
 }
 
