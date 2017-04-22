@@ -7,7 +7,10 @@
 
 #ifndef VECTOR_H_
 #define VECTOR_H_
+
 #include <iostream>
+#include "Fib.h"
+
 
 using namespace std;
 namespace myimpl {
@@ -26,6 +29,10 @@ protected:
 	void copyFrom(T const * A, Rank lo, Rank hi);
 	void expand();
 	void shrink();
+
+	/* sort */
+	void merge(Rank lo, Rank mi, Rank hi);
+	void mergeSort(Rank lo, Rank hi);
 public:
 	Vector(int c);
 	Vector(T const * A, Rank lo, Rank hi); // Copy from array
@@ -43,7 +50,7 @@ public:
 	Rank find(T const& e ,Rank lo, Rank hi); // find: disordered vector find
 	Rank search(T const& e, Rank lo, Rank hi) const; // search: ordered vector find
 	static Rank binSearch(T const& e, Rank lo, Rank hi) const; // search: ordered vector find
-	Rank fibSearch(T const& e, Rank lo, Rank hi) const; // search: ordered vector find
+	static Rank fibSearch(T const& e, Rank lo, Rank hi) const; // search: ordered vector find
 
 	int deduplicate();
 	int uniquify();

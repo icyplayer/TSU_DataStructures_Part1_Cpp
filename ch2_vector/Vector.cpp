@@ -61,6 +61,33 @@ void Vector<T>::shrink(){
 	return;
 }
 
+
+/* sort */
+template<typename T>
+void Vector<T>::merge(Rank lo, Rank mi, Rank hi) {
+	T *A = _elem + lo;
+	int lb = mi - lo; T *B = new T[lb]; // Why not use size_t?
+	for (int i = 0; i < lb; ++i) B[i] = _elem[i];  // Make a copy of 1st half of vector
+	int lc = hi - mi; T *C = _elem + mi;
+	int j = 0, k = 0;
+	for(int i=0, j=0, k=0; (j < lb) || (k < lc);){
+		if ((j < lb) && ((lc < k) || B[j] <= C[k])) A[i++] = B[j++];  // C[k] not exists or B[j] <= C[k]
+		if ((k < lc) && ((lb < j) || C[k] <  B[j])) A[i++] = C[k++];  // B[j] not exists or C[k] <  B[k]
+	}
+	delete [] B;
+}
+
+template<typename T>
+void Vector<T>::mergeSort(Rank lo, Rank hi) {
+	if (hi - lo < 2) return;
+	Rank mi = (lo+hi) >> 1;
+	mergeSort(lo, mi);
+	mergeSort(mi, hi);
+	merge(lo, mi, hi);
+}
+
+
+
 template<typename T>
 T& Vector<T>::operator[] (Rank r) const { // TODO what does "const" mean?
 	return _elem[r];
@@ -115,46 +142,55 @@ Rank Vector<T>::search(T const& e, Rank lo, Rank hi) const {
 	 : fibSearch(e, lo, hi);
 }
 
-// ordered vector
+// Ordered vector
+// Binary search: Middle point - median point
+// Not input sensitive
 // O(logn)
 template<typename T>
 static Rank Vector<T>::binSearch(T const& e, Rank lo, Rank hi) const {
-	/* implement based on 02D2-5. recursive version */
-	// TODO iterate version
-	if (lo <= hi){ // Error
-		return -1;
+	// 02D4-2, B ver.
+//	while (hi-lo > 1){
+//		Rank mi = (hi+lo) >> 1;
+//		(e < _elem[mi]) ? hi = mi : lo = mi+1;
+//	}
+//	return  (e == _elem[lo]) ? lo : -1;
+	// 02D4-3, C ver.
+	while (hi > lo){
+		Rank mi = (hi+lo) >> 1;
+		(e < _elem[mi]) ? hi = mi : lo = mi+1;
 	}
-	else if (hi-lo == 1){ // trivial solution
-		if (e < _elem[lo]){
-			return lo-1;
-		}
-		else if (_elem[lo] < e){
-			return hi;
-		}
-		else{
-			return lo;
-		}
-	}
-	Rank mi = (lo+hi) >> 1;
-	if (e < _elem[mi]){
-		hi = mi;
-	}
-	else if (_elem[mi] < e){
-		lo = mi+1;
-	}
-	else { // _elem[mi] == e
-		while (mi < hi && (_elem[mi++] == e));
-		return --mi;
-	}
-
-	return binSearch(e, lo, hi);
+	return  --lo;
 }
 
 template<typename T>
-Rank Vector<T>::fibSearch(T const& e, Rank lo, Rank hi) const {
-	Rank idx = 0;
-	/* TODO */
-	return idx;
+Rank binSearch(T* A, T const& e, Rank lo, Rank hi) const {
+	// 02D4-2, B ver.
+	while (hi-lo > 1){
+		Rank mi = (hi+lo) >> 1;
+		(e < A[mi]) ? hi = mi : lo = mi+1;
+	}
+	return  (e == A[lo]) ? lo : -1;
+}
+
+
+// Ordered vector
+// fibSearch: Middle point - golden section ratio
+template<typename T>
+static Rank Vector<T>::fibSearch(T const& e, Rank lo, Rank hi) const {
+	using namespace toolkit;
+	Fib fib(hi-lo);
+	while (lo < hi){
+		while (hi-lo < fib.get())
+			fib.prev();  // FIXME: seems unnecessary
+		Rank mi = lo + fib.get() - 1; // FIXME: lo=0, hi=9, fib=13, mi=12
+		if (e < _elem[mi])
+			hi = mi;
+		else if (_elem[mi])
+			lo = mi+1;
+		else
+			return mi;
+	}
+	return -1;  // Search failed
 }
 
 // disordered vector
