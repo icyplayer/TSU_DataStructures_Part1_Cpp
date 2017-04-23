@@ -9,26 +9,26 @@
 
 namespace myimpl {
 
-template<typename T>
-T Vector<T>::Vector(int c = DEFAULT_CAPACITY) {
-	_elem = new T[_capacity = c]; // memory allocated to this vector
-	_size = 0; // elements in vector
-}
-
-template<typename T>
-T Vector<T>::Vector(T const * A, Rank lo, Rank hi){
-	copyFrom(A, lo, hi);
-}
-
-template<typename T>
-T Vector<T>::Vector(Vector<T> const& V, Rank lo, Rank hi){
-	copyFrom(V._elem, lo, hi); // FIXME: protected param _elem cannot be visited from outside
-}
-
-template<typename T>
-T Vector<T>::Vector(Vector<T> const& V){
-	copyFrom(V._elem, 0, V._size); // FIXME: protected param _elem cannot be visited from outside
-}
+//template<typename T>
+//T Vector<T>::Vector(int c = DEFAULT_CAPACITY) {
+//	_elem = new T[_capacity = c]; // memory allocated to this vector
+//	_size = 0; // elements in vector
+//}
+//
+//template<typename T>
+//T Vector<T>::Vector(T const * A, Rank lo, Rank hi){
+//	copyFrom(A, lo, hi);
+//}
+//
+//template<typename T>
+//T Vector<T>::Vector(Vector<T> const& V, Rank lo, Rank hi){
+//	copyFrom(V._elem, lo, hi); // FIXME: protected param _elem cannot be visited from outside
+//}
+//
+//template<typename T>
+//T Vector<T>::Vector(Vector<T> const& V){
+//	copyFrom(V._elem, 0, V._size); // FIXME: protected param _elem cannot be visited from outside
+//}
 
 template<typename T>
 void Vector<T>::copyFrom(T const * A, Rank lo, Rank hi){
@@ -69,7 +69,7 @@ void Vector<T>::merge(Rank lo, Rank mi, Rank hi) {
 	int lb = mi - lo; T *B = new T[lb]; // Why not use size_t?
 	for (int i = 0; i < lb; ++i) B[i] = _elem[i];  // Make a copy of 1st half of vector
 	int lc = hi - mi; T *C = _elem + mi;
-	int j = 0, k = 0;
+
 	// 02F-4
 	/*
 	for(int i=0, j=0, k=0; (j < lb) || (k < lc);){
@@ -120,7 +120,7 @@ Rank Vector<T>::insert(Rank r, T e){
 template<typename T>
 int Vector<T>::remove(Rank lo, Rank hi) {
 	if (lo == hi){
-		return;
+		return 0;
 	}
 	while (hi < _size){
 		_elem[lo++] = _elem[hi++];
@@ -158,7 +158,7 @@ Rank Vector<T>::search(T const& e, Rank lo, Rank hi) const {
 // Not input sensitive
 // O(logn)
 template<typename T>
-static Rank Vector<T>::binSearch(T const& e, Rank lo, Rank hi) const {
+Rank Vector<T>::binSearch(const T & e, Rank lo, Rank hi) {
 	// 02D4-2, B ver.
 //	while (hi-lo > 1){
 //		Rank mi = (hi+lo) >> 1;
@@ -174,7 +174,7 @@ static Rank Vector<T>::binSearch(T const& e, Rank lo, Rank hi) const {
 }
 
 template<typename T>
-Rank binSearch(T* A, T const& e, Rank lo, Rank hi) const {
+Rank binSearch(T* A, T const& e, Rank lo, Rank hi) {
 	// 02D4-2, B ver.
 	while (hi-lo > 1){
 		Rank mi = (hi+lo) >> 1;
@@ -187,7 +187,7 @@ Rank binSearch(T* A, T const& e, Rank lo, Rank hi) const {
 // Ordered vector
 // fibSearch: Middle point - golden section ratio
 template<typename T>
-static Rank Vector<T>::fibSearch(T const& e, Rank lo, Rank hi) const {
+Rank Vector<T>::fibSearch(const T& e, Rank lo, Rank hi) {
 	using namespace toolkit;
 	Fib fib(hi-lo);
 	while (lo < hi){

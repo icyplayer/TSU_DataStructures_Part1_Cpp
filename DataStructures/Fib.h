@@ -26,8 +26,8 @@ public:
 	}
 
 	int get() const { return g;}
-	int next() const { g += f; f = g-f; return g; }
-	int prev() const { f = g-f; g -= f; return g; }
+	int next() { g += f; f = g-f; return g; }
+	int prev() { f = g-f; g -= f; return g; }
 };
 
 
