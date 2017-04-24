@@ -23,8 +23,15 @@ struct ListNode {
 	ListNode(T e, Posi(T) p = NULL, Posi(T) s = NULL)
 		: data(e), pred(p), succ(s){}
 
-	Posi(T) insertAsPred(T const& e);
-	Posi(T) insertAsSucc(T const& e);
+	Posi(T) insertAsPred(T const& e) {
+		Posi(T) x = new ListNode(e, pred, this);
+		pred->succ = x; pred = x; return x;
+	}
+
+	Posi(T) insertAsSucc(T const& e) {  // TODO implemented myself, need test
+		Posi(T) x = new ListNode(e, this, succ);
+		succ->pred = x; succ = x; return x;
+	}
 
 };
 
